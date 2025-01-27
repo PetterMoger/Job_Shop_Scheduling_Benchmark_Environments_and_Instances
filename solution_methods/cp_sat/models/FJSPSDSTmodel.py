@@ -47,7 +47,10 @@ def update_env(jobShopEnv, vars, solver, status, solution_count, time_limit):
         for machine, operations in machine_schedule.items():
             sorted_operations = sorted(operations.items(), key=lambda x: x[1])
             for idx, (operation, start_time) in enumerate(sorted_operations):
-                processing_time = operation.processing_times[machine.machine_id]
+                try:
+                    processing_time = operation.processing_times[machine.machine_id]
+                except KeyError:
+                    print(f"KeyError: Machine {machine.machine_id}, Operation {operation.operation_id}, idx {idx}")
                 setup_time = 0 if idx == 0 else jobShopEnv._sequence_dependent_setup_times[machine.machine_id][
                     sorted_operations[idx - 1][0].operation_id][operation.operation_id]
                 machine.add_operation_to_schedule_at_time(operation, start_time, processing_time, setup_time)
@@ -176,8 +179,11 @@ def fjsp_sdst_cp_sat_model(jobShopEnv) -> tuple[cp_model.CpModel, dict]:
             for j, op_j in enumerate(operations):
                 if i >= j: continue  # Prevent duplicate constraints and self-comparison
                 before_var = model.NewBoolVar(f"before_j{op_i[1]}_t{op_i[2]}_j{op_j[1]}_t{op_j[2]}_on_m{machine_id}")
-                setup_time_ij = setup_times[machine_id][operation_identifier[(op_i[1], op_i[2])]][operation_identifier[(op_j[1], op_j[2])]]
-                setup_time_ji = setup_times[machine_id][operation_identifier[(op_j[1], op_j[2])]][operation_identifier[(op_i[1], op_i[2])]]
+                try:
+                    setup_time_ij = setup_times[machine_id][operation_identifier[(op_i[1], op_i[2])]][operation_identifier[(op_j[1], op_j[2])]]
+                    setup_time_ji = setup_times[machine_id][operation_identifier[(op_j[1], op_j[2])]][operation_identifier[(op_i[1], op_i[2])]]
+                except KeyError:
+                    print(f"KeyError: Machine {machine_id}, Operations {operation_identifier[(op_i[1], op_i[2])]} and {operation_identifier[(op_j[1], op_j[2])]}")
 
                 model.Add(op_i[0].EndExpr() + setup_time_ij <= op_j[0].StartExpr()).OnlyEnforceIf(before_var)
                 model.Add(op_j[0].EndExpr() + setup_time_ji <= op_i[0].StartExpr()).OnlyEnforceIf(before_var.Not())
