@@ -6,7 +6,7 @@ import pandas as pd
 import tomli
 import torch
 
-from data_parsers import parser_fajsp, parser_fjsp, parser_fjsp_sdst, parser_jsp_fsp
+from data_parsers import parser_fajsp, parser_fjsp, parser_fjsp_sdst, parser_jsp_fsp, shen_parser_fjsp_sdst
 from scheduling_environment.jobShop import JobShop
 
 
@@ -25,6 +25,8 @@ def load_job_shop_env(problem_instance: str, from_absolute_path=False) -> JobSho
         jobShopEnv = parser_fjsp.parse_fjsp(jobShopEnv, problem_instance, from_absolute_path)
     elif '/fjsp_sdst/' in problem_instance:
         jobShopEnv = parser_fjsp_sdst.parse_fjsp_sdst(jobShopEnv, problem_instance, from_absolute_path)
+    elif '/shen_fjsp_sdst/' in problem_instance:
+        jobShopEnv = shen_parser_fjsp_sdst.shen_parse_fjsp_sdst(jobShopEnv, problem_instance, from_absolute_path)
     elif '/fajsp/' in problem_instance:
         jobShopEnv = parser_fajsp.parse_fajsp(jobShopEnv, problem_instance, from_absolute_path)
     else:
