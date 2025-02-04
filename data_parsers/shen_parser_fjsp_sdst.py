@@ -70,35 +70,30 @@ def shen_parse_fjsp_sdst(JobShop, instance, from_absolute_path=False):
         current_line += 1 # Skip empty line
         
         sdst_lines = lines[current_line:current_line+number_total_jobs+1]
-        sdst_matrix = [list(map(int,line.split())) for line in sdst_lines]
+        sdst = [list(map(int,line.split())) for line in sdst_lines]
         
-        print(sdst_matrix)
-        
-        # Machines
-        for id_machine in range(0, number_total_machines):
-            JobShop.add_machine((Machine(id_machine)))
+    sequence_dependent_setup_times = {} # Initialize a dict for sequence-dependent setup times (sdst)
 
-        # counter_machine_id = 0
-        counter_operation_id = 0
-        
-        sequence_dependent_setup_times = [[[-1 for r in range(len(JobShop.operations))] for t in range (
-            len(JobShop.operations))] for m in range(number_total_machines)]
-        
-        for job in range(len(JobShop.jobs)+1):
-            for op in range(len(JobShop.jobs[job].operations)):
-                for machine in range(len(JobShop.machines)):
-                    print(lines[current_line].split())
-                    print(list(map(int, lines[current_line].split()[3*job+machine:])))
-                    
-                    sequence_dependent_setup_times[machine][counter_operation_id] = 
-                    
-                    
-                    list(
-                        map(int, lines[current_line].split()[3*job+machine:])
-                    )
-                counter_operation_id += 1
-        current_line += 1
-            # counter_machine_id = 0
+    for i in range(1, number_total_jobs + 1): # Rows 1 to n (task-specific setup times)
+        for i_prime in range(len(sdst[0])): # columns correspond to job/machines
+            current_job = i # current job
+            prev_job = i_prime // number_total_machines + 1 # previous job
+            machine_id = i_prime % number_total_machines + 1 # machine_id
+            
+            setup_time = int(sdst[i][i_prime])
+            
+            sequence_dependent_setup_times[(current_job, prev_job, machine_id)] = setup_time
+
+    # Add the first row (initial setups for machines)
+    for column in range(len(sdst[0])):
+        job_i = column // number_total_machines + 1
+        machine_id = column % number_total_machines + 1
+        setup_time = int(sdst[0][column])
+        sequence_dependent_setup_times[(job_i, 0, machine_id)] = setup_time
+    
+    # Machines
+    for id_machine in range(0, number_total_machines):
+        JobShop.add_machine((Machine(id_machine)))
         
     # add also the operations without precedence operations to the precendence relations dictionary
     for operation in JobShop.operations:
