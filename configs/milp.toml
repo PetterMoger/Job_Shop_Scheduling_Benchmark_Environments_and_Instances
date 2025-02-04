@@ -1,5 +1,5 @@
 [instance]
-problem_instance = "/fjsp_sdst/Shen_instances/test_a/test01a"
+problem_instance = "/fjsp_sdst/shen_instances/test_a/test01a"
 
 [solver]
 time_limit = 3600       # time limit for the gurobi solver, in seconds
