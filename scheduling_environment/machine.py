@@ -12,6 +12,9 @@ class Machine:
     def __str__(self):
         return f"Machine {self._machine_id}, {len(self._processed_operations)} scheduled operations"
 
+    def __repr__(self):
+        return f"<Machine(machine_id={self._machine_id})>"
+    
     def reset(self):
         self._processed_operations = []
 
