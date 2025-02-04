@@ -63,11 +63,16 @@ def shen_parse_fjsp_sdst(JobShop, instance, from_absolute_path=False):
                 current_line += 2
             
             current_line += 1
-            jobShop.add_job(job)
+            JobShop.add_job(job)
             job_id += 1
 
         # Parse SDST (Sequence-dependent setup times)
         current_line += 1 # Skip empty line
+        
+        sdst_lines = lines[current_line:current_line+number_total_jobs+1]
+        sdst_matrix = [list(map(int,line.split())) for line in sdst_lines]
+        
+        print(sdst_matrix)
         
         # Machines
         for id_machine in range(0, number_total_machines):
@@ -79,13 +84,16 @@ def shen_parse_fjsp_sdst(JobShop, instance, from_absolute_path=False):
         sequence_dependent_setup_times = [[[-1 for r in range(len(JobShop.operations))] for t in range (
             len(JobShop.operations))] for m in range(number_total_machines)]
         
-        for job in range(len(JobShop.jobs)):
+        for job in range(len(JobShop.jobs)+1):
             for op in range(len(JobShop.jobs[job].operations)):
                 for machine in range(len(JobShop.machines)):
                     print(lines[current_line].split())
                     print(list(map(int, lines[current_line].split()[3*job+machine:])))
                     
-                    sequence_dependent_setup_times[machine][counter_operation_id] = list(
+                    sequence_dependent_setup_times[machine][counter_operation_id] = 
+                    
+                    
+                    list(
                         map(int, lines[current_line].split()[3*job+machine:])
                     )
                 counter_operation_id += 1
@@ -114,3 +122,27 @@ print(jobShop.operations)
 print(jobShop.machines)
 print(jobShop)
 print(jobShop._sequence_dependent_setup_times)
+
+'''
+33  53  27  1 55  19
+0 0 0 38  53  50
+32  45  65  0 0 0
+'''
+
+
+'''
+[
+    [
+        [6, 3, 4, 4],
+        [3, 6, 4, 4],
+        [3, 3, 7, 4],
+        [4, 4, 4, 8]
+    ],
+    [
+        [6, 3, 4, 3],
+        [3, 6, 3, 3],
+        [3, 3, 6, 4],
+        [3, 4, 3, 6]
+    ]
+]
+'''
