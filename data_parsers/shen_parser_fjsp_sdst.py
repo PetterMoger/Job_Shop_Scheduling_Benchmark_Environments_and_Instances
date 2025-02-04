@@ -68,6 +68,10 @@ def shen_parse_fjsp_sdst(JobShop, instance, from_absolute_path=False):
 
         # Parse SDST (Sequence-dependent setup times)
         current_line += 1 # Skip empty line
+        
+        # Machines
+        for id_machine in range(0, number_total_machines):
+            JobShop.add_machine((Machine(id_machine)))
 
         # counter_machine_id = 0
         counter_operation_id = 0
@@ -78,10 +82,14 @@ def shen_parse_fjsp_sdst(JobShop, instance, from_absolute_path=False):
         for job in range(len(JobShop.jobs)):
             for op in range(len(JobShop.jobs[job].operations)):
                 for machine in range(len(JobShop.machines)):
+                    print(lines[current_line].split())
+                    print(list(map(int, lines[current_line].split()[3*job+machine:])))
+                    
                     sequence_dependent_setup_times[machine][counter_operation_id] = list(
                         map(int, lines[current_line].split()[3*job+machine:])
                     )
                 counter_operation_id += 1
+        current_line += 1
             # counter_machine_id = 0
         
     # add also the operations without precedence operations to the precendence relations dictionary
@@ -94,10 +102,6 @@ def shen_parse_fjsp_sdst(JobShop, instance, from_absolute_path=False):
         # Precedence Relations
     JobShop.add_precedence_relations_operations(precedence_relations)
     JobShop.add_sequence_dependent_setup_times(sequence_dependent_setup_times)
-    
-    # Machines
-    for id_machine in range(0, number_total_machines):
-        JobShop.add_machine((Machine(id_machine)))
     
     return JobShop
 
