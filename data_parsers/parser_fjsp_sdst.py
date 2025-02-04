@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from scheduling_environment.jobShop import JobShop
 from scheduling_environment.job import Job
 from scheduling_environment.machine import Machine
 from scheduling_environment.operation import Operation
@@ -90,3 +91,13 @@ def parse_fjsp_sdst(JobShop, instance, from_absolute_path=False):
         JobShop.add_machine((Machine(id_machine)))
 
     return JobShop
+
+file = 'data/fjsp_sdst/fattahi/Fattahi_setup_01.fjs'
+jobShop = JobShop()
+jobShop = parse_fjsp_sdst(jobShop, file, from_absolute_path=True)
+
+print(jobShop.jobs)
+print(jobShop.operations)
+print(jobShop.machines)
+print(jobShop)
+print(jobShop._sequence_dependent_setup_times)
