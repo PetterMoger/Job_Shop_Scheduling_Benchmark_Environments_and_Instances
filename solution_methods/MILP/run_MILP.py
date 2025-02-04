@@ -7,7 +7,7 @@ from solution_methods.helper_functions import load_parameters, load_job_shop_env
 from solution_methods.MILP.models import JSPmodel, FJSPmodel, FJSPSDSTmodel, shen_FJSPSDSTmodel
 from solution_methods.MILP.utils import retrieve_decision_variables, results_saving, output_dir_exp_name
 
-PARAM_FILE = os.path.abspath("../../configs/milp.toml")
+PARAM_FILE = os.path.abspath("configs/milp.toml")
 logging.basicConfig(level=logging.INFO)
 
 MODEL_MAP = {
